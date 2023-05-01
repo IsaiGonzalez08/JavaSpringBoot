@@ -1,8 +1,8 @@
 package com.einformes.iproyect.services.interfaces;
 
-import com.einformes.iproyect.controller.dtos.requests.CreateUserRequest;
-import com.einformes.iproyect.controller.dtos.requests.UpdateUserRequest;
-import com.einformes.iproyect.controller.dtos.responses.GetUserResponse;
+import com.einformes.iproyect.controller.dtos.requests.User.CreateUserRequest;
+import com.einformes.iproyect.controller.dtos.requests.User.UpdateUserRequest;
+import com.einformes.iproyect.controller.dtos.responses.User.GetUserResponse;
 
 import java.util.List;
 

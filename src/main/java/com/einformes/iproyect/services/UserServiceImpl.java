@@ -1,17 +1,16 @@
 package com.einformes.iproyect.services;
 
-import com.einformes.iproyect.controller.dtos.requests.CreateUserRequest;
-import com.einformes.iproyect.controller.dtos.requests.UpdateUserRequest;
-import com.einformes.iproyect.controller.dtos.responses.GetUserResponse;
+import com.einformes.iproyect.controller.dtos.requests.User.CreateUserRequest;
+import com.einformes.iproyect.controller.dtos.requests.User.UpdateUserRequest;
+import com.einformes.iproyect.controller.dtos.responses.User.GetUserResponse;
 import com.einformes.iproyect.entities.User;
 import com.einformes.iproyect.repositories.IUserRepository;
 import com.einformes.iproyect.services.interfaces.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements IUserService {
@@ -21,13 +20,7 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public GetUserResponse getUser(Long id) {
-        Optional<User> userOptional = repository.findById(id);
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            GetUserResponse from = this.from(user);
-            return from;
-        }
-        throw new RuntimeException("No esta carnalito");
+        return from(id);
     }
 
     @Override
@@ -35,12 +28,21 @@ public class UserServiceImpl implements IUserService {
         User user = from(request);
         repository.save(user);
     }
+    private User from(CreateUserRequest request) {
+        User user = new User();
+        user.setUsername(request.getUsername());
+        user.setEmail(request.getEmail());
+        user.setPassword(request.getPassword());
+        return user;
+    }
 
     @Override
     public List<GetUserResponse> list() {
-        List<User> users = repository.findAll();
-        List<GetUserResponse> userResponses = from(users);
-        return userResponses;
+        return repository
+                .findAll()
+                .stream()
+                .map(this::from)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -50,43 +52,37 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public GetUserResponse update(UpdateUserRequest request, Long id) {
-        Optional<User> optionalUser = repository.findById(id);
-        if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
-            User updated = from(request, user);
-            User saved = repository.save(updated);
-            GetUserResponse response = from(saved);
-            return response;
-        }
-        throw new RuntimeException("No esta carnal no se actualizó");
+        User user = findOneAndEnsureExist(id);
+        user = update(user, request);
+        return from(user);
     }
 
-    private User from(UpdateUserRequest request, User user) {
+    private User update(User user, UpdateUserRequest request) {
+        user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
-        return user;
+        return repository.save(user);
     }
 
-    private List<GetUserResponse> from(List<User> users) {
-        List<GetUserResponse> userResponses = new ArrayList<>();
-        for (int i = 0; i < users.size(); i++) {
-            User user = users.get(i);
-            GetUserResponse response = from(user);
-            userResponses.add(response);
-        }
-        return userResponses;
+    private User findOneAndEnsureExist(Long id){
+        return repository
+                .findById(id)
+                .orElseThrow(() -> new RuntimeException("El usuario no existe"));
     }
 
-    private User from(CreateUserRequest request) {
-        User user = new User();
-        user.setEmail(request.getEmail());
-        user.setPassword(request.getPassword());
-        return user;
-    }
+
 
     private GetUserResponse from(User user) {
         GetUserResponse response = new GetUserResponse();
-        response.setId(user.getId());
+        response.setUsername(user.getUsername());
+        response.setIduser(user.getIduser());
         response.setEmail(user.getEmail());
         return response;
     }
+
+    private GetUserResponse from(Long idUser){
+        return repository.findById(idUser)
+                .map(this::from)
+                .orElseThrow(() -> new RuntimeException("El usuario no existe"));
+    }
+
 }

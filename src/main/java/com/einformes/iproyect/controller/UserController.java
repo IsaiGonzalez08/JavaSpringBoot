@@ -1,8 +1,8 @@
 package com.einformes.iproyect.controller;
 
-import com.einformes.iproyect.controller.dtos.requests.CreateUserRequest;
-import com.einformes.iproyect.controller.dtos.requests.UpdateUserRequest;
-import com.einformes.iproyect.controller.dtos.responses.GetUserResponse;
+import com.einformes.iproyect.controller.dtos.requests.User.CreateUserRequest;
+import com.einformes.iproyect.controller.dtos.requests.User.UpdateUserRequest;
+import com.einformes.iproyect.controller.dtos.responses.User.GetUserResponse;
 import com.einformes.iproyect.services.interfaces.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
